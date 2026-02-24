@@ -1,0 +1,36 @@
+pkgname=rhash
+pkgver=1.4.5
+pkgrel=0
+pkgdesc="Great utility for computing hash sums."
+url="https://rhash.sourceforge.io/"
+arch="all"
+license="BSD-Zero-Clause"
+options="!check"
+makedepends="qnx-base-dev"
+depends_dev=$makedepends
+depends=""
+subpackages="${pkgname}-dev ${pkgname}-doc"
+source="RHash-${pkgver}.tar.gz::https://github.com/rhash/RHash/archive/refs/tags/v${pkgver}.tar.gz"
+builddir=${srcdir}/RHash-${pkgver}
+
+build() {
+    unset CC BUILDCC CXX BUILDCXX SETFATTR LDFALGS
+
+    CFLAGS="$CFLAGS -O2" \
+    ./configure \
+        --cc=${CHOST}-gcc \
+        --ar=${CHOST}-ar \
+        --prefix="${PREFIX}"
+
+    make
+    make -C librhash 
+}
+
+package() {
+    make DESTDIR="${pkgdir}" install
+    make DESTDIR="${pkgdir}" install-lib-headers install-lib-shared
+}
+
+sha512sums="
+49bd6aa2497efc4871ae31eaca51d2dc78ceb7126311557d5280b14fafe9355eaecad37f0f78f865e4e1dd1aeb506d3301989cd2f9fff7b0091c81978e8c2f2e  RHash-1.4.5.tar.gz
+"
